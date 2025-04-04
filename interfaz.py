@@ -95,8 +95,7 @@ class App(tk.Frame):
 
             # Guardar en archivo .txt
             with open("pixeles_cuadrante.txt", "w") as f:
-                f.write(f"Cuadrante: {cuadrante}\n")
-                f.write("Pixeles (R,G,B) separados por espacios:\n")
+                #f.write(f"Cuadrante: {cuadrante}\n")
                 f.write(pixeles_texto)
 
             print("Pixeles guardados en 'pixeles_cuadrante.txt'")

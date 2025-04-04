@@ -27,7 +27,7 @@ class App(tk.Frame):
         self.image_frame.pack()
 
         # Cargar imagen
-        ruta = "floresGrises_400x400.png"
+        ruta = "imagenes/floresGrises_400x400.png"
         imagen_original = Image.open(ruta)
         self.imagen_redimensionada = imagen_original.resize((400, 400))
         self.imagen_tk = ImageTk.PhotoImage(self.imagen_redimensionada)
@@ -79,6 +79,27 @@ class App(tk.Frame):
             cuadrante = row * 4 + col + 1
             self.seleccion_label.config(text=f"Cuadrante seleccionado: {cuadrante}")
             print(f"Seleccionaste el cuadrante: {cuadrante}")
+
+            # Coordenadas del cuadrante
+            x1 = col * 100
+            y1 = row * 100
+            x2 = x1 + 100
+            y2 = y1 + 100
+            cuadrante_img = self.imagen_redimensionada.crop((x1, y1, x2, y2))
+
+            # Obtener los valores de píxeles
+            pixeles = list(cuadrante_img.getdata())  # Lista de (R, G, B)
+
+            # Convertir a texto separado por espacios
+            pixeles_texto = ' '.join(f"{r},{g},{b}" for (r, g, b) in pixeles)
+
+            # Guardar en archivo .txt
+            with open("pixeles_cuadrante.txt", "w") as f:
+                f.write(f"Cuadrante: {cuadrante}\n")
+                f.write("Pixeles (R,G,B) separados por espacios:\n")
+                f.write(pixeles_texto)
+
+            print("Pixeles guardados en 'pixeles_cuadrante.txt'")
         else:
             self.seleccion_label.config(text="Cuadrante seleccionado: Ninguno")
 

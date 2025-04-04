@@ -8,7 +8,7 @@ class RobotControlApp:
         self.root.configure(bg="black")  # Fondo negro para la ventana
 
         # Cargar la imagen del robot usando Pillow
-        self.robot_image = Image.open("Girasol.png")
+        self.robot_image = Image.open("imagenes/Girasol.png")
         self.robot_photo = ImageTk.PhotoImage(self.robot_image)
         self.robot_label = tk.Label(root, image=self.robot_photo, bg="black")
         self.robot_label.grid(row=0, column=0, columnspan=4, pady=10)

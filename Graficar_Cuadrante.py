@@ -1,47 +1,44 @@
 from PIL import Image
 import numpy as np
 
-# Configuración
-width, height = 100, 100  # Dimensiones de la imagen
-input_file = 'pixeles_cuadrante.txt'  # Nombre de tu archivo de entrada
-output_image = 'cuadrante.png'  # Nombre de la imagen de salida
 
-
-def leer_pixeles(archivo):
+def cargar_imagen_grises(archivo, ancho=100, alto=100):
+    # Leer todos los valores del archivo
     with open(archivo, 'r') as f:
-        contenido = f.read()
+        valores = [int(linea.strip()) for linea in f if linea.strip()]
 
-    # Dividir todos los valores RGB
-    valores = contenido.replace('\n', ' ').split()
+    # Verificar cantidad de píxeles
+    if len(valores) != ancho * alto:
+        raise ValueError(f"Se esperaban {ancho * alto} valores, pero se encontraron {len(valores)}")
 
-    # Procesar cada grupo RGB
-    pixeles = []
-    for valor in valores:
-        r, g, b = map(int, valor.split(','))
-        pixeles.append((r, g, b))
+    # Convertir a array numpy y redimensionar
+    matriz_grises = np.array(valores, dtype=np.uint8).reshape((alto, ancho))
 
-    return pixeles
+    # Crear imagen (PIL automáticamente la interpreta como escala de grises)
+    imagen = Image.fromarray(matriz_grises, 'L')
+
+    return imagen
 
 
-# Leer los píxeles del archivo
-pixeles = leer_pixeles(input_file)
+# Uso del código
+try:
+    # Configuración
+    input_file = 'pixeles_cuadrante.txt'  # Archivo con valores de gris
+    output_image = 'imagen_grises.png'  # Imagen de salida
 
-# Verificar que tenemos suficientes píxeles
-if len(pixeles) != width * height:
-    print(f"Error: Se esperaban {width * height} píxeles, pero se encontraron {len(pixeles)}")
-else:
-    # Crear una nueva imagen
-    imagen = Image.new('RGB', (width, height))
+    # Cargar y procesar imagen
+    imagen = cargar_imagen_grises(input_file, 100, 100)
 
-    # Convertir la lista de píxeles a un array de numpy para mejor manipulación
-    array_pixeles = np.array(pixeles).reshape(height, width, 3)
-
-    # Crear la imagen desde el array
-    imagen = Image.fromarray(array_pixeles.astype('uint8'), 'RGB')
-
-    # Guardar la imagen
+    # Guardar imagen
     imagen.save(output_image)
-    print(f"Imagen guardada como {output_image}")
+    print(f"Imagen en escala de grises guardada como {output_image}")
 
-    # Mostrar la imagen (opcional)
+    # Mostrar imagen
     imagen.show()
+
+except FileNotFoundError:
+    print(f"Error: No se encontró el archivo {input_file}")
+except ValueError as e:
+    print(f"Error: {e}")
+except Exception as e:
+    print(f"Error inesperado: {e}")

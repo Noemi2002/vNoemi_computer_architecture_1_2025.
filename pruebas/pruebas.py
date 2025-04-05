@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Leer el archivo
-with open('pixeles_cuadrante.txt', 'r') as f:
+with open('Interfaz/pixeles_cuadrante.txt', 'r') as f:
     lines = f.readlines()
 
 # Convertir líneas en una matriz de enteros

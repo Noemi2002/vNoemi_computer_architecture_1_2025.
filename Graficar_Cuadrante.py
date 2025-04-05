@@ -3,6 +3,7 @@ import numpy as np
 
 
 def cargar_imagen_grises(archivo, ancho=100, alto=100):
+
     # Leer todos los valores del archivo
     with open(archivo, 'r') as f:
         valores = [int(linea.strip()) for linea in f if linea.strip()]

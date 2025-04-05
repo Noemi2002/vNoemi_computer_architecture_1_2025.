@@ -65,7 +65,7 @@ def gray_filter(img_sepia):
             pixels[px, py] = (grayValue, grayValue, grayValue)
     return img_sepia
 
-img = Image.open("imagenes/flores_400x400.jpg") # Variable para guardar el path de la imagen
+img = Image.open("../imagenes/flores_400x400.jpg") # Variable para guardar el path de la imagen
 #img.show() # Muestra la imagen
 
 gray_img = gray_filter(img) #Llamada a la función

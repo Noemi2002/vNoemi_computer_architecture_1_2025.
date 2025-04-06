@@ -1,181 +1,343 @@
 section .data
-    input_file  db 'input.txt', 0
+    input_file db 'input.txt', 0
     output_file db 'output.txt', 0
-    newline     db 10
-    digit_buffer times 11 db 0
+    input_format db "%d %d %d %d", 0
+    output_format db "%d %d %d %d", 10, "%d %d %d %d", 10, "%d %d %d %d", 10, "%d %d %d %d", 0
     
-    ; Valores de ejemplo (10, 20, 30, 40)
-    matrix_2x2  dd 10, 20, 30, 40
-    matrix_4x4  dd 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ; Variables para almacenar los valores de entrada
+    i11 dd 0
+    i12 dd 0
+    i21 dd 0
+    i22 dd 0
+    
+    ; Matriz de salida 4x4
+    output_matrix times 16 dd 0
 
 section .text
     global _start
+    extern fopen, fclose, fscanf, fprintf, exit
 
 _start:
-    ; --- Interpolar fila 0 ---
-    mov eax, [matrix_2x2]      ; I00 = 10
-    mov [matrix_4x4], eax
-    mov ebx, [matrix_2x2 + 4]  ; I01 = 20
-    mov ecx, 1                 ; paso 1/3
-    call interpolate_linear
-    mov [matrix_4x4 + 4], eax  ; Debería ser 13 (10 + (20-10)*1/3)
-    mov ecx, 2                 ; paso 2/3
-    call interpolate_linear
-    mov [matrix_4x4 + 8], eax  ; Debería ser 17 (10 + (20-10)*2/3)
-    mov eax, [matrix_2x2 + 4]
-    mov [matrix_4x4 + 12], eax ; I03 = 20
-
-    ; --- Interpolar fila 3 ---
-    mov eax, [matrix_2x2 + 8]  ; I30 = 30
-    mov [matrix_4x4 + 48], eax
-    mov ebx, [matrix_2x2 + 12] ; I31 = 40
-    mov ecx, 1
-    call interpolate_linear
-    mov [matrix_4x4 + 52], eax ; 33
-    mov ecx, 2
-    call interpolate_linear
-    mov [matrix_4x4 + 56], eax ; 37
-    mov eax, [matrix_2x2 + 12]
-    mov [matrix_4x4 + 60], eax ; I33 = 40
-
-    ; --- Interpolar columna 0 ---
-    mov eax, [matrix_4x4]      ; I00 = 10
-    mov ebx, [matrix_4x4 + 48] ; I30 = 30
-    mov ecx, 1
-    call interpolate_linear
-    mov [matrix_4x4 + 16], eax ; 17
-    mov ecx, 2
-    call interpolate_linear
-    mov [matrix_4x4 + 32], eax ; 23
-
-    ; --- Interpolar columna 3 ---
-    mov eax, [matrix_4x4 + 12] ; I03 = 20
-    mov ebx, [matrix_4x4 + 60] ; I33 = 40
-    mov ecx, 1
-    call interpolate_linear
-    mov [matrix_4x4 + 28], eax ; 27
-    mov ecx, 2
-    call interpolate_linear
-    mov [matrix_4x4 + 44], eax ; 33
-
-    ; --- Interpolar fila 1 ---
-    mov eax, [matrix_4x4 + 16] ; I10 = 17
-    mov ebx, [matrix_4x4 + 28] ; I13 = 27
-    mov ecx, 1
-    call interpolate_linear
-    mov [matrix_4x4 + 20], eax ; 20
-    mov ecx, 2
-    call interpolate_linear
-    mov [matrix_4x4 + 24], eax ; 24
-
-    ; --- Interpolar fila 2 ---
-    mov eax, [matrix_4x4 + 32] ; I20 = 23
-    mov ebx, [matrix_4x4 + 44] ; I23 = 33
-    mov ecx, 1
-    call interpolate_linear
-    mov [matrix_4x4 + 36], eax ; 26
-    mov ecx, 2
-    call interpolate_linear
-    mov [matrix_4x4 + 40], eax ; 30
-
-    ; --- Escribir resultados ---
-    mov eax, 8                 ; sys_creat
-    mov ebx, output_file
-    mov ecx, 0644o
+    ; Abrir archivo de entrada
+    mov eax, 5              ; sys_open
+    mov ebx, input_file
+    mov ecx, 0              ; O_RDONLY
     int 0x80
-    mov ebx, eax               ; File descriptor
-
-    mov esi, matrix_4x4
-    mov ecx, 16
-
-write_loop:
-    push ecx
-    push ebx
     
-    ; Convertir número a ASCII
-    mov eax, [esi]
-    lea edi, [digit_buffer + 10]
-    mov byte [edi], 0
+    cmp eax, 0
+    jl exit_error           ; Si hay error al abrir
     
-    mov ebx, 10
-    test eax, eax
-    jz write_zero
-
-convert_loop:
-    dec edi
-    xor edx, edx
-    div ebx
-    add dl, '0'
-    mov [edi], dl
-    test eax, eax
-    jnz convert_loop
-    jmp write_number
-
-write_zero:
-    dec edi
-    mov byte [edi], '0'
-
-write_number:
-    lea ecx, [digit_buffer + 10]
-    sub ecx, edi
+    mov ebx, eax            ; Guardar file descriptor
     
-    mov eax, 4
-    mov ebx, [esp]
-    mov edx, ecx
-    mov ecx, edi
+    ; Leer los 4 valores del archivo
+    mov eax, 3              ; sys_read
+    mov ecx, buffer
+    mov edx, 32             ; Tamaño suficiente para 4 números
     int 0x80
-
-    mov eax, 4
-    mov ecx, newline
-    mov edx, 1
+    
+    ; Cerrar archivo de entrada
+    mov eax, 6              ; sys_close
     int 0x80
-
-    add esi, 4
-    pop ebx
-    pop ecx
-    loop write_loop
-
-    mov eax, 6                 ; sys_close
-    int 0x80
-
-    mov eax, 1                 ; sys_exit
-    xor ebx, ebx
-    int 0x80
-
-; --- Función de interpolación CORREGIDA ---
-interpolate_linear:
-    push edx
-    push ecx
-    push ebx
-
-    ; Guardar valor inicial
-    mov ebx, eax
-
-    ; Calcular diferencia (final - inicial)
-    sub eax, [esp + 8]         ; [esp+8] = valor inicial (eax original)
-    neg eax                    ; eax = (final - inicial)
-
-    ; Multiplicar por paso (ecx)
-    imul eax, ecx
-
-    ; Dividir por 3
-    mov ecx, 3
+    
+    ; Parsear los valores leídos
+    push i22
+    push i21
+    push i12
+    push i11
+    push input_format
+    push buffer
+    call sscanf
+    add esp, 24
+    
+    ; Calcular los valores interpolados
+    
+    ; Primera fila (original + interpolaciones horizontales)
+    mov eax, [i11]
+    mov [output_matrix + 0], eax
+    
+    ; Calcular a = (4-2)/(4-1)*i11 + (2-1)/(4-1)*i12 = (2/3)*i11 + (1/3)*i12
+    mov eax, [i11]
+    mov ebx, 2
+    imul eax, ebx           ; 2*i11
+    mov ecx, eax            ; Guardar temporal
+    
+    mov eax, [i12]
+    mov ebx, 1
+    imul eax, ebx           ; 1*i12
+    
+    add eax, ecx            ; 2*i11 + 1*i12
+    mov ebx, 3
     cdq
-    idiv ecx
+    idiv ebx                ; (2*i11 + i12)/3
+    
+    mov [output_matrix + 4], eax  ; a
+    
+    ; Calcular b = (4-3)/(4-1)*i11 + (3-1)/(4-1)*i12 = (1/3)*i11 + (2/3)*i12
+    mov eax, [i11]
+    mov ebx, 1
+    imul eax, ebx           ; 1*i11
+    mov ecx, eax            ; Guardar temporal
+    
+    mov eax, [i12]
+    mov ebx, 2
+    imul eax, ebx           ; 2*i12
+    
+    add eax, ecx            ; 1*i11 + 2*i12
+    mov ebx, 3
+    cdq
+    idiv ebx                ; (i11 + 2*i12)/3
+    
+    mov [output_matrix + 8], eax  ; b
+    
+    mov eax, [i12]
+    mov [output_matrix + 12], eax
+    
+    ; Segunda fila (interpolaciones verticales + interpolaciones diagonales)
+    ; Calcular c = (4-2)/(4-1)*i11 + (2-1)/(4-1)*i21 = (2/3)*i11 + (1/3)*i21
+    mov eax, [i11]
+    mov ebx, 2
+    imul eax, ebx
+    mov ecx, eax
+    
+    mov eax, [i21]
+    mov ebx, 1
+    imul eax, ebx
+    
+    add eax, ecx
+    mov ebx, 3
+    cdq
+    idiv ebx
+    mov [output_matrix + 16], eax  ; c
+    
+    ; Calcular d (interpolación diagonal)
+    ; d = promedio de los 4 valores alrededor
+    mov eax, [i11]
+    add eax, [i12]
+    add eax, [i21]
+    add eax, [i22]
+    mov ebx, 4
+    cdq
+    idiv ebx
+    mov [output_matrix + 20], eax  ; d
+    
+    ; Calcular e (interpolación diagonal)
+    ; Similar a d pero con diferentes pesos
+    mov eax, [i11]
+    mov ebx, 1
+    imul eax, ebx
+    mov ecx, eax
+    
+    mov eax, [i12]
+    mov ebx, 2
+    imul eax, ebx
+    add ecx, eax
+    
+    mov eax, [i21]
+    mov ebx, 2
+    imul eax, ebx
+    add ecx, eax
+    
+    mov eax, [i22]
+    mov ebx, 1
+    imul eax, ebx
+    add ecx, eax
+    
+    mov eax, ecx
+    mov ebx, 6
+    cdq
+    idiv ebx
+    mov [output_matrix + 24], eax  ; e
+    
+    ; Calcular f = (4-2)/(4-1)*i12 + (2-1)/(4-1)*i22 = (2/3)*i12 + (1/3)*i22
+    mov eax, [i12]
+    mov ebx, 2
+    imul eax, ebx
+    mov ecx, eax
+    
+    mov eax, [i22]
+    mov ebx, 1
+    imul eax, ebx
+    
+    add eax, ecx
+    mov ebx, 3
+    cdq
+    idiv ebx
+    mov [output_matrix + 28], eax  ; f
+    
+    ; Tercera fila (interpolaciones verticales + diagonales)
+    ; Calcular g = (4-3)/(4-1)*i11 + (3-1)/(4-1)*i21 = (1/3)*i11 + (2/3)*i21
+    mov eax, [i11]
+    mov ebx, 1
+    imul eax, ebx
+    mov ecx, eax
+    
+    mov eax, [i21]
+    mov ebx, 2
+    imul eax, ebx
+    
+    add eax, ecx
+    mov ebx, 3
+    cdq
+    idiv ebx
+    mov [output_matrix + 32], eax  ; g
+    
+    ; Calcular h (interpolación diagonal)
+    ; Similar a d pero con diferentes pesos
+    mov eax, [i11]
+    mov ebx, 1
+    imul eax, ebx
+    mov ecx, eax
+    
+    mov eax, [i12]
+    mov ebx, 1
+    imul eax, ebx
+    add ecx, eax
+    
+    mov eax, [i21]
+    mov ebx, 2
+    imul eax, ebx
+    add ecx, eax
+    
+    mov eax, [i22]
+    mov ebx, 2
+    imul eax, ebx
+    add ecx, eax
+    
+    mov eax, ecx
+    mov ebx, 6
+    cdq
+    idiv ebx
+    mov [output_matrix + 36], eax  ; h
+    
+    ; Calcular i (interpolación diagonal)
+    ; Similar a e pero con diferentes pesos
+    mov eax, [i11]
+    mov ebx, 1
+    imul eax, ebx
+    mov ecx, eax
+    
+    mov eax, [i12]
+    mov ebx, 2
+    imul eax, ebx
+    add ecx, eax
+    
+    mov eax, [i21]
+    mov ebx, 1
+    imul eax, ebx
+    add ecx, eax
+    
+    mov eax, [i22]
+    mov ebx, 2
+    imul eax, ebx
+    add ecx, eax
+    
+    mov eax, ecx
+    mov ebx, 6
+    cdq
+    idiv ebx
+    mov [output_matrix + 40], eax  ; i
+    
+    ; Calcular j = (4-3)/(4-1)*i12 + (3-1)/(4-1)*i22 = (1/3)*i12 + (2/3)*i22
+    mov eax, [i12]
+    mov ebx, 1
+    imul eax, ebx
+    mov ecx, eax
+    
+    mov eax, [i22]
+    mov ebx, 2
+    imul eax, ebx
+    
+    add eax, ecx
+    mov ebx, 3
+    cdq
+    idiv ebx
+    mov [output_matrix + 44], eax  ; j
+    
+    ; Cuarta fila (original + interpolaciones horizontales)
+    mov eax, [i21]
+    mov [output_matrix + 48], eax
+    
+    ; Calcular k = (4-2)/(4-1)*i21 + (2-1)/(4-1)*i22 = (2/3)*i21 + (1/3)*i22
+    mov eax, [i21]
+    mov ebx, 2
+    imul eax, ebx
+    mov ecx, eax
+    
+    mov eax, [i22]
+    mov ebx, 1
+    imul eax, ebx
+    
+    add eax, ecx
+    mov ebx, 3
+    cdq
+    idiv ebx
+    mov [output_matrix + 52], eax  ; k
+    
+    ; Calcular l = (4-3)/(4-1)*i21 + (3-1)/(4-1)*i22 = (1/3)*i21 + (2/3)*i22
+    mov eax, [i21]
+    mov ebx, 1
+    imul eax, ebx
+    mov ecx, eax
+    
+    mov eax, [i22]
+    mov ebx, 2
+    imul eax, ebx
+    
+    add eax, ecx
+    mov ebx, 3
+    cdq
+    idiv ebx
+    mov [output_matrix + 56], eax  ; l
+    
+    mov eax, [i22]
+    mov [output_matrix + 60], eax
+    
+    ; Escribir resultados en output.txt
+    mov eax, 5              ; sys_open
+    mov ebx, output_file
+    mov ecx, 0x241          ; O_WRONLY|O_CREAT|O_TRUNC, 644 permissions
+    mov edx, 0644o
+    int 0x80
+    
+    cmp eax, 0
+    jl exit_error           ; Si hay error al abrir
+    
+    mov ebx, eax            ; Guardar file descriptor
+    
+    ; Escribir la matriz de salida
+    push dword [output_matrix + 60]
+    push dword [output_matrix + 56]
+    push dword [output_matrix + 52]
+    push dword [output_matrix + 48]
+    push dword [output_matrix + 44]
+    push dword [output_matrix + 40]
+    push dword [output_matrix + 36]
+    push dword [output_matrix + 32]
+    push dword [output_matrix + 28]
+    push dword [output_matrix + 24]
+    push dword [output_matrix + 20]
+    push dword [output_matrix + 16]
+    push dword [output_matrix + 12]
+    push dword [output_matrix + 8]
+    push dword [output_matrix + 4]
+    push dword [output_matrix + 0]
+    push output_format
+    call fprintf
+    add esp, 68
+    
+    ; Cerrar archivo de salida
+    mov eax, 6              ; sys_close
+    int 0x80
+    
+    ; Salir correctamente
+    mov eax, 1              ; sys_exit
+    mov ebx, 0
+    int 0x80
+    
+exit_error:
+    mov eax, 1              ; sys_exit
+    mov ebx, 1
+    int 0x80
 
-    ; Sumar al valor inicial
-    add eax, ebx
-
-    ; Redondear (si residuo ≥ 2, sumar 1)
-    cmp edx, 2
-    jge round_up
-    jmp done
-
-round_up:
-    add eax, 1
-
-done:
-    pop ebx
-    pop ecx
-    pop edx
-    ret
+section .bss
+    buffer resb 32

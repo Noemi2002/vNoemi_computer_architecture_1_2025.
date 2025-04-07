@@ -3,3 +3,6 @@ Comandos para ejecutar el código
 2. ld -o algoritmo algoritmo.o
 3. ./algoritmo
 4. xxd output.bin (verificar el contenido de output.bin)
+
+Si se va a llenar el input.txt con terminal (para pruebas), solo se deben cambiar los valores
+printf "\x0A\x14\x1E\x28" > input.bin 

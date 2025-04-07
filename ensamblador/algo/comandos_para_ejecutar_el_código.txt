@@ -1,0 +1,5 @@
+Comandos para ejecutar el código
+1. nasm -felf64 -o algoritmo.o algoritmo.asm
+2. ld -o algoritmo algoritmo.o
+3. ./algoritmo
+4. xxd output.bin (verificar el contenido de output.bin)

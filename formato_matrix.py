@@ -32,7 +32,7 @@ def txt_a_matriz(input_txt, output_txt, filas=100, columnas=100):
 
 # Ejemplo de uso
 txt_a_matriz(
-    input_txt='pixeles_cuadrante.txt',  # Archivo con 10000 valores (1 por línea)
+    input_txt='pixeles_cuadrante.img',  # Archivo con 10000 valores (1 por línea)
     output_txt='matriz.txt',  # Archivo de salida con formato matriz
     filas=100,
     columnas=100

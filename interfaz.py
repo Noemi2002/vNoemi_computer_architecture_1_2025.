@@ -94,7 +94,7 @@ class App(tk.Frame):
             pixeles_texto = ' '.join(f"{r},{g},{b}" for (r, g, b) in pixeles)
 
             # Guardar en archivo .txt
-            with open("pixeles_cuadrante.txt", "w") as f:
+            with open("pixeles_cuadrante.img", "w") as f:
                 #f.write(f"Cuadrante: {cuadrante}\n")
                 #f.write("Pixeles (R,G,B):\n")
                 for (r, g, b) in pixeles:

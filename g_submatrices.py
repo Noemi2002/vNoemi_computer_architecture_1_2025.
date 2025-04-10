@@ -21,12 +21,12 @@ def generar_submatrices(matriz, carpeta_salida):
             contador += 1
 
 def guardar_submatriz(submatriz, numero, carpeta_salida):
-    nombre = os.path.join(carpeta_salida, f"submatriz_{numero}.txt")
+    nombre = os.path.join(carpeta_salida, f"submatriz_{numero}.img")
     with open(nombre, 'w') as f:
         for valor in submatriz:
             f.write(f"{valor}\n")
 
 # Uso
 carpeta_destino = "submatrices"
-matriz = cargar_matriz("pixeles_cuadrante.txt")
+matriz = cargar_matriz("pixeles_cuadrante.img")
 generar_submatrices(matriz, carpeta_destino)

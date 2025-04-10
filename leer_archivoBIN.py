@@ -25,6 +25,6 @@ mapeo = {
     12: 5, 13: 6, 14: 9, 15: 10
 }
 archivo_binario = 'ensamblador/algo/output.bin'
-archivo_texto = 'valores.txt'
+archivo_texto = 'prueba.txt'
 reordenar_bytes_pares(archivo_binario, archivo_texto, mapeo)
 

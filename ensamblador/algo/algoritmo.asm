@@ -1,6 +1,6 @@
 section .data
-    input_file  db 'input.bin', 0
-    output_file db 'output.bin', 0
+    input_file  db 'input.img', 0
+    output_file db 'output.img', 0
     num1        db 0         ; 1 byte
     num2        db 0         ; 1 byte
     num3        db 0         ; 1 byte

@@ -10,6 +10,6 @@ def escribir_binario(input_txt, output_bin):
 
 escribir_binario(
     input_txt='submatrices/submatriz_0.img',  # Archivo con 10000 valores (1 por línea)
-    output_bin='submatrices/valor.bin',  # Archivo de salida con formato matriz
+    output_bin='submatrices/input.img',  # Archivo de salida con formato matriz
 
 )

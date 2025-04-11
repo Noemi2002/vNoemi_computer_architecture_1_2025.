@@ -33,7 +33,7 @@ mapeo = {
     12: 5, 13: 6, 14: 9, 15: 10
 }
 
-# Ruta base del proyecto (ajustá si hace falta)
+# Ruta base del proyecto
 base_dir = "/home/noemi/Descargas/Proyecto1/Repo/vNoemi_computer_architecture_1_2025."  # o usar os.path.abspath...
 
 carpeta_submatrices = os.path.join(base_dir, "submatrices")
@@ -46,31 +46,34 @@ carpeta_interpolacion = os.path.join(base_dir, "interpolacion")
 os.makedirs(carpeta_output, exist_ok=True)
 os.makedirs(carpeta_interpolacion, exist_ok=True)
 
-# Procesar submatrices del 0 al 9800
-for i in range(0, 9801):
-    nombre_archivo = f"submatriz_{i}.img"
-    ruta_submatriz = os.path.join(carpeta_submatrices, nombre_archivo)
+def procesar_submatrices():
+    # Procesar submatrices del 0 al 9800
+    for i in range(0, 9801):
+        nombre_archivo = f"submatriz_{i}.img"
+        ruta_submatriz = os.path.join(carpeta_submatrices, nombre_archivo)
 
-    if not os.path.exists(ruta_submatriz):
-        print(f"❌ Archivo no encontrado: {ruta_submatriz}, saltando...")
-        continue
+        if not os.path.exists(ruta_submatriz):
+            print(f"❌ Archivo no encontrado: {ruta_submatriz}, saltando...")
+            continue
 
-    # Convertir a binario crudo para input
-    input_bin = os.path.join(ruta_ensamblador, "input.img")
-    escribir_binario(ruta_submatriz, input_bin)
+        # Convertir a binario crudo para input
+        input_bin = os.path.join(ruta_ensamblador, "input.img")
+        escribir_binario(ruta_submatriz, input_bin)
 
-    # Ejecutar el ensamblador
-    subprocess.run([ejecutable], cwd=ruta_ensamblador)
+        # Ejecutar el ensamblador
+        subprocess.run([ejecutable], cwd=ruta_ensamblador)
 
-    # Mover output generado
-    output_bin = os.path.join(ruta_ensamblador, "output.img")
-    nuevo_output_bin = os.path.join(carpeta_output, f"output{i}.img")
-    shutil.move(output_bin, nuevo_output_bin)
+        # Mover output generado
+        output_bin = os.path.join(ruta_ensamblador, "output.img")
+        nuevo_output_bin = os.path.join(carpeta_output, f"output{i}.img")
+        shutil.move(output_bin, nuevo_output_bin)
 
-    # Aplicar reordenamiento e interpolación
-    archivo_interpolado = os.path.join(carpeta_interpolacion, f"interpolado{i}.img")
-    reordenar_bytes_pares(nuevo_output_bin, archivo_interpolado, mapeo)
+        # Aplicar reordenamiento e interpolación
+        archivo_interpolado = os.path.join(carpeta_interpolacion, f"interpolado{i}.img")
+        reordenar_bytes_pares(nuevo_output_bin, archivo_interpolado, mapeo)
 
-    print(f"✔ Procesado submatriz_{i}.img → output{i}.img → interpolado{i}.txt")
+        print(f"✔ Procesado submatriz_{i}.img → output{i}.img → interpolado{i}.txt")
 
-print("✅ ¡Todos los archivos fueron procesados e interpolados!")
+    print("✅ ¡Todos los archivos fueron procesados e interpolados!")
+
+#procesar_submatrices()

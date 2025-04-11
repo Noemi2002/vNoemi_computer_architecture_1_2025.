@@ -16,7 +16,7 @@ def cargar_imagen_grises(archivo, ancho=100, alto=100):
     matriz_grises = np.array(valores, dtype=np.uint8).reshape((alto, ancho))
 
     # Crear imagen (PIL automáticamente la interpreta como escala de grises)
-    imagen = Image.fromarray(matriz_grises, 'L')
+    #imagen = Image.fromarray(matriz_grises, 'L')
 
     return imagen
 
@@ -24,7 +24,7 @@ def cargar_imagen_grises(archivo, ancho=100, alto=100):
 # Uso del código
 try:
     # Configuración
-    input_file = 'pixeles_cuadrante.txt'  # Archivo con valores de gris
+    input_file = 'pixeles_cuadrante.img'  # Archivo con valores de gris
     output_image = 'imagen_grises.png'  # Imagen de salida
 
     # Cargar y procesar imagen

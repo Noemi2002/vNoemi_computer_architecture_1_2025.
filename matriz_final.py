@@ -46,11 +46,13 @@ def reconstruir_matriz(submatrices, n_original=100):
             idx += 1
     return matriz_reconstruida
 
+def matriz_final():
+    # Uso
+    n_submatrices = 9801  # Para una matriz 100x100
+    submatrices = cargar_submatrices_interpoladas(n_submatrices)
+    matriz_final = reconstruir_matriz(submatrices)
 
-# Uso
-n_submatrices = 9801  # Para una matriz 100x100
-submatrices = cargar_submatrices_interpoladas(n_submatrices)
-matriz_final = reconstruir_matriz(submatrices)
+    # Guardar la matriz final (opcional)
+    np.savetxt("matriz_reconstruida.img", matriz_final, fmt="%d")
 
-# Guardar la matriz final (opcional)
-np.savetxt("matriz_reconstruida.img", matriz_final, fmt="%d")
+#matriz_final()

@@ -26,7 +26,11 @@ def guardar_submatriz(submatriz, numero, carpeta_salida):
         for valor in submatriz:
             f.write(f"{valor}\n")
 
-# Uso
-carpeta_destino = "submatrices"
-matriz = cargar_matriz("pixeles_cuadrante.img")
-generar_submatrices(matriz, carpeta_destino)
+
+
+def submatrices():
+    carpeta_destino = "submatrices"
+    matriz = cargar_matriz("pixeles_cuadrante.img")
+    generar_submatrices(matriz, carpeta_destino)
+
+#submatrices()

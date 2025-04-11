@@ -18,6 +18,8 @@ cuadrante_imagen_tk = None
 imagen_interpolada_canvas = None
 imagen_interpolada_tk = None
 seleccion_button = None
+cuadrante_resaltado = None
+relieve_items = []
 
 def procedimiento_algoritmo():
     submatrices()
@@ -41,20 +43,27 @@ def cargar_imagen_grises(archivo, ancho=100, alto=100):
     return Image.fromarray(matriz_grises, 'L')
 
 def obtener_cuadrante_por_pixel(event):
-    global imagen_redimensionada, seleccion_button, cuadrante_canvas, cuadrante_imagen_tk
+    global imagen_redimensionada, seleccion_label, cuadrante_canvas, cuadrante_imagen_tk, cuadrante_resaltado
 
     x, y = event.x, event.y
     if 0 <= x < 400 and 0 <= y < 400:
         col = x // 100
         row = y // 100
         cuadrante = row * 4 + col + 1
-        seleccion_button.config(text=f"Cuadrante seleccionado: {cuadrante}")
+        #seleccion_button.config(text=f"Generar interpolación")
         print(f"Seleccionaste el cuadrante: {cuadrante}")
 
+        # Eliminar rectángulo anterior si existe
+        if cuadrante_resaltado is not None:
+            canvas.delete(cuadrante_resaltado)
+
+        # Dibujar nuevo rectángulo rosa fuerte (magenta)
         x1, y1 = col * 100, row * 100
         x2, y2 = x1 + 100, y1 + 100
-        cuadrante_img = imagen_redimensionada.crop((x1, y1, x2, y2))
+        cuadrante_resaltado = canvas.create_rectangle(x1, y1, x2, y2, outline="#FF1493", width=4)
 
+        # Recortar y guardar píxeles del cuadrante
+        cuadrante_img = imagen_redimensionada.crop((x1, y1, x2, y2))
         pixeles = list(cuadrante_img.getdata())
         with open("pixeles_cuadrante.img", "w") as f:
             for (r, g, b) in pixeles:
@@ -126,7 +135,7 @@ def crear_interfaz(root):
     canvas.bind("<Button-1>", obtener_cuadrante_por_pixel)
 
     seleccion_button = ttk.Button(left_frame,
-                                  text="Cuadrante seleccionado: Ninguno",
+                                  text="Generar interpolación",
                                   command=procedimiento_algoritmo)
     seleccion_button.pack(pady=20)
 
@@ -136,14 +145,14 @@ def crear_interfaz(root):
     bottom_right_frame = tk.Frame(right_frame, bg='#f5c4e6')
     bottom_right_frame.pack(fill=tk.BOTH, expand=True)
 
-    label_img1 = ttk.Label(top_right_frame, text="Cuadrante seleccionado", font=('Times', 14), anchor="center")
+    label_img1 = ttk.Label(top_right_frame, text="Cuadrante seleccionado", font=('Times', 14, "bold"), anchor="center")
     label_img1.configure(background='#f5c4e6')
     label_img1.pack()
 
     cuadrante_canvas = tk.Canvas(top_right_frame, width=100, height=100)
     cuadrante_canvas.pack(pady=10)
 
-    label_img2 = ttk.Label(bottom_right_frame, text="Imagen interpolada", font=('Times', 14), anchor="center")
+    label_img2 = ttk.Label(bottom_right_frame, text="Imagen interpolada", font=('Times', 14, "bold"), anchor="center")
     label_img2.configure(background='#f5c4e6')
     label_img2.pack()
 

@@ -1,11 +1,11 @@
 section .data
-    input_file  db 'input.bin', 0
-    output_file db 'output.bin', 0
-    num1        db 0         ; 1 byte
-    num2        db 0         ; 1 byte
-    num3        db 0         ; 1 byte
-    num4        db 0         ; 1 byte
-    num5        db 0         ; 1 byte (resultado)
+    input_file  db 'input.img', 0
+    output_file db 'output.img', 0
+    num1        db 0         ; Cada num es de 1 byte
+    num2        db 0
+    num3        db 0
+    num4        db 0
+    num5        db 0
     num6        db 0
     num7        db 0
     num8        db 0
@@ -17,9 +17,9 @@ section .data
     num14        db 0
     num15        db 0
     num16        db 0
-    num17       db 33        ; 1 byte
-    num18       db 66        ; 1 byte
-    divisor     db 100       ; 1 byte
+    num17       db 33        ; Valor a multiplicar
+    num18       db 66        ; Valor a multiplicar
+    divisor     db 100       ; Valor para dividir
 
 section .bss
     input_fd    resd 1       ; Descriptor
@@ -29,7 +29,7 @@ section .text
     global _start
 
 matriz:
-    ; Cargar valores (extender a 16 bits para multiplicar)
+    ; Valor a
     movzx ax, byte [num1]    ; num1 -> AX
     mov bl, [num18]          ; num18 -> BL
     mul bl                   ; AX = AL * BL (66*num1)
@@ -50,226 +50,227 @@ matriz:
 ; -------------------------------------------------------------   
    
    ; Valor b
-    movzx ax, byte [num1]    ; num1 -> AX
-    mov bl, [num17]          ; num17 -> BL
-    mul bl                   ; AX = AL * BL (66*num1)
-    mov cx, ax               ; Guardar en CX
+    movzx ax, byte [num1]
+    mov bl, [num17]
+    mul bl
+    mov cx, ax
 
-    movzx ax, byte [num2]    ; num2 -> AX
-    mov bl, [num18]          ; num18 -> BL
-    mul bl                   ; AX = AL * BL (33*num2)
+    movzx ax, byte [num2]
+    mov bl, [num18]
+    mul bl
 
-    add ax, cx               ; AX = (66*num1 + 33*num2)
+    add ax, cx
     
     ; Dividir por 100
     mov bl, [divisor]
-    div bl                   ; AL = AX / 100
+    div bl
     
-    mov [num6], al           ; Guardar solo el byte bajo
+    mov [num6], al
     
 ; -------------------------------------------------------------
    
    ; Valor c
-    movzx ax, byte [num1]    ; num1 -> AX
-    mov bl, [num18]          ; num18 -> BL
-    mul bl                   ; AX = AL * BL (66*num1)
-    mov cx, ax               ; Guardar en CX
+    movzx ax, byte [num1]
+    mov bl, [num18]
+    mul bl
+    mov cx, ax
 
-    movzx ax, byte [num3]    ; num3 -> AX
-    mov bl, [num17]          ; num17 -> BL
-    mul bl                   ; AX = AL * BL (33*num2)
+    movzx ax, byte [num3]
+    mov bl, [num17]
+    mul bl
 
-    add ax, cx               ; AX = (66*num1 + 33*num3)
+    add ax, cx
     
     ; Dividir por 100
     mov bl, [divisor]
-    div bl                   ; AL = AX / 100
+    div bl
     
-    mov [num7], al           ; Guardar solo el byte bajo
+    mov [num7], al
         
 ; -------------------------------------------------------------
    
    ; Valor g
-    movzx ax, byte [num1]    ; num1 -> AX
-    mov bl, [num17]          ; num17 -> BL
-    mul bl                   ; AX = AL * BL (66*num1)
-    mov cx, ax               ; Guardar en CX
+    movzx ax, byte [num1]
+    mov bl, [num17]
+    mul bl
+    mov cx, ax
 
-    movzx ax, byte [num3]    ; num3 -> AX
-    mov bl, [num18]          ; num18 -> BL
-    mul bl                   ; AX = AL * BL (33*num2)
+    movzx ax, byte [num3]
+    mov bl, [num18]
+    mul bl
 
-    add ax, cx               ; AX = (66*num1 + 33*num3)
+    add ax, cx
     
     ; Dividir por 100
     mov bl, [divisor]
-    div bl                   ; AL = AX / 100
+    div bl
     
-    mov [num8], al           ; Guardar solo el byte bajo
+    mov [num8], al
 
 ; -------------------------------------------------------------
    
    ; Valor k
-    movzx ax, byte [num3]    ; num3 -> AX
-    mov bl, [num18]          ; num18 -> BL
-    mul bl                   ; AX = AL * BL (66*num3)
-    mov cx, ax               ; Guardar en CX
+    movzx ax, byte [num3]
+    mov bl, [num18]
+    mul bl
+    mov cx, ax
 
-    movzx ax, byte [num4]    ; num4 -> AX
-    mov bl, [num17]          ; num17 -> BL
-    mul bl                   ; AX = AL * BL (33*num4)
+    movzx ax, byte [num4]
+    mov bl, [num17]
+    mul bl
 
-    add ax, cx               ; AX = (66*num3 + 33*num4)
+    add ax, cx
     
     ; Dividir por 100
     mov bl, [divisor]
-    div bl                   ; AL = AX / 100
+    div bl
     
-    mov [num9], al           ; Guardar solo el byte bajo
+    mov [num9], al
     
 ; -------------------------------------------------------------
    
    ; Valor l
-    movzx ax, byte [num3]    ; num3 -> AX
-    mov bl, [num17]          ; num17 -> BL
-    mul bl                   ; AX = AL * BL (66*num3)
-    mov cx, ax               ; Guardar en CX
+    movzx ax, byte [num3]
+    mov bl, [num17]
+    mul bl
+    mov cx, ax
 
-    movzx ax, byte [num4]    ; num4 -> AX
-    mov bl, [num18]          ; num18 -> BL
-    mul bl                   ; AX = AL * BL (33*num4)
+    movzx ax, byte [num4]
+    mov bl, [num18]
+    mul bl
 
-    add ax, cx               ; AX = (66*num3 + 33*num4)
+    add ax, cx
     
     ; Dividir por 100
     mov bl, [divisor]
-    div bl                   ; AL = AX / 100
+    div bl
     
-    mov [num10], al           ; Guardar solo el byte bajo 
+    mov [num10], al
    
 ; -------------------------------------------------------------
    
    ; Valor f
-    movzx ax, byte [num2]    ; num2 -> AX
-    mov bl, [num18]          ; num18 -> BL
-    mul bl                   ; AX = AL * BL (66*num2)
-    mov cx, ax               ; Guardar en CX
+    movzx ax, byte [num2]
+    mov bl, [num18]
+    mul bl
+    mov cx, ax
 
-    movzx ax, byte [num4]    ; num4 -> AX
-    mov bl, [num17]          ; num17 -> BL
-    mul bl                   ; AX = AL * BL (33*num4)
+    movzx ax, byte [num4]
+    mov bl, [num17]
+    mul bl
 
-    add ax, cx               ; AX = (66*num2+ 33*num4)
+    add ax, cx
     
     ; Dividir por 100
     mov bl, [divisor]
-    div bl                   ; AL = AX / 100
+    div bl
     
-    mov [num11], al           ; Guardar solo el byte bajo 
+    mov [num11], al
    
 ; -------------------------------------------------------------
    
    ; Valor j
-    movzx ax, byte [num2]    ; num2 -> AX
-    mov bl, [num17]          ; num17 -> BL
-    mul bl                   ; AX = AL * BL (66*num2)
-    mov cx, ax               ; Guardar en CX
+    movzx ax, byte [num2]
+    mov bl, [num17]
+    mul bl
+    mov cx, ax
 
-    movzx ax, byte [num4]    ; num4 -> AX
-    mov bl, [num18]          ; num18 -> BL
-    mul bl                   ; AX = AL * BL (33*num4)
+    movzx ax, byte [num4]
+    mov bl, [num18]
+    mul bl
 
-    add ax, cx               ; AX = (66*num2+ 33*num4)
+    add ax, cx
     
     ; Dividir por 100
     mov bl, [divisor]
-    div bl                   ; AL = AX / 100
+    div bl
     
-    mov [num12], al           ; Guardar solo el byte bajo 
+    mov [num12], al
    
 ; -------------------------------------------------------------
    
    ; Valor d
-    movzx ax, byte [num7]    ; num2 -> AX
-    mov bl, [num18]          ; num18 -> BL
-    mul bl                   ; AX = AL * BL (66*num2)
-    mov cx, ax               ; Guardar en CX
+    movzx ax, byte [num7]
+    mov bl, [num18]
+    mul bl
+    mov cx, ax
 
-    movzx ax, byte [num11]    ; num4 -> AX
-    mov bl, [num17]          ; num17 -> BL
-    mul bl                   ; AX = AL * BL (33*num4)
+    movzx ax, byte [num11]
+    mov bl, [num17]
+    mul bl
 
-    add ax, cx               ; AX = (66*num2+ 33*num4)
+    add ax, cx
     
     ; Dividir por 100
     mov bl, [divisor]
-    div bl                   ; AL = AX / 100
+    div bl
     
-    mov [num13], al           ; Guardar solo el byte bajo 
+    mov [num13], al
    
 ; -------------------------------------------------------------
    
    ; Valor e
-    movzx ax, byte [num7]    ; num2 -> AX
-    mov bl, [num17]          ; num17 -> BL
-    mul bl                   ; AX = AL * BL (66*num2)
-    mov cx, ax               ; Guardar en CX
+    movzx ax, byte [num7]
+    mov bl, [num17]
+    mul bl
+    mov cx, ax
 
-    movzx ax, byte [num11]    ; num4 -> AX
-    mov bl, [num18]          ; num18 -> BL
-    mul bl                   ; AX = AL * BL (33*num4)
+    movzx ax, byte [num11]
+    mov bl, [num18]
+    mul bl
 
-    add ax, cx               ; AX = (66*num2+ 33*num4)
+    add ax, cx
     
     ; Dividir por 100
     mov bl, [divisor]
-    div bl                   ; AL = AX / 100
+    div bl
     
-    mov [num14], al           ; Guardar solo el byte bajo 
+    mov [num14], al
 
 ; -------------------------------------------------------------
    
    ; Valor h
-    movzx ax, byte [num8]    ; num2 -> AX
-    mov bl, [num18]          ; num17 -> BL
-    mul bl                   ; AX = AL * BL (66*num2)
-    mov cx, ax               ; Guardar en CX
+    movzx ax, byte [num8]
+    mov bl, [num18]
+    mul bl
+    mov cx, ax
 
-    movzx ax, byte [num12]    ; num4 -> AX
-    mov bl, [num17]          ; num18 -> BL
-    mul bl                   ; AX = AL * BL (33*num4)
+    movzx ax, byte [num12]
+    mov bl, [num17]
+    mul bl
 
-    add ax, cx               ; AX = (66*num2+ 33*num4)
+    add ax, cx
     
     ; Dividir por 100
     mov bl, [divisor]
-    div bl                   ; AL = AX / 100
+    div bl
     
-    mov [num15], al           ; Guardar solo el byte bajo 
+    mov [num15], al
 
 ; -------------------------------------------------------------
    
    ; Valor i
-    movzx ax, byte [num8]    ; num2 -> AX
-    mov bl, [num17]          ; num17 -> BL
-    mul bl                   ; AX = AL * BL (66*num2)
-    mov cx, ax               ; Guardar en CX
+    movzx ax, byte [num8]
+    mov bl, [num17]
+    mul bl
+    mov cx, ax
 
-    movzx ax, byte [num12]    ; num4 -> AX
-    mov bl, [num18]          ; num18 -> BL
-    mul bl                   ; AX = AL * BL (33*num4)
+    movzx ax, byte [num12]
+    mov bl, [num18]
+    mul bl
 
-    add ax, cx               ; AX = (66*num2+ 33*num4)
+    add ax, cx
     
     ; Dividir por 100
     mov bl, [divisor]
-    div bl                   ; AL = AX / 100
+    div bl
     
-    mov [num16], al           ; Guardar solo el byte bajo 
+    mov [num16], al
    
-    ret ;Devolverse a la otra función
+    ret ; Devolverse a la otra función
 
 _start:
+
     ; Abrir archivo de entrada
     mov eax, 5               ; sys_open
     mov ebx, input_file
@@ -295,11 +296,11 @@ _start:
     ; Calcular los nuevos valores y llenar la matriz
     call matriz
 
-    ; Escribir TODOS los valores (5 bytes)
+    ; Escribir todos los valores, de num1 - num16
     mov eax, 4               ; sys_write
     mov ebx, [output_fd]
-    mov ecx, num1            ; num1-num5 son contiguos
-    mov edx, 16               ; 5 bytes a escribir
+    mov ecx, num1
+    mov edx, 16              
     int 0x80
 
     ; Cerrar archivos

@@ -20,6 +20,7 @@ def generar_submatrices(matriz, carpeta_salida):
             guardar_submatriz(submatriz, contador, carpeta_salida)
             contador += 1
 
+# Función que guarda cada submatriz en un documento .img
 def guardar_submatriz(submatriz, numero, carpeta_salida):
     nombre = os.path.join(carpeta_salida, f"submatriz_{numero}.img")
     with open(nombre, 'w') as f:
@@ -27,10 +28,9 @@ def guardar_submatriz(submatriz, numero, carpeta_salida):
             f.write(f"{valor}\n")
 
 
-
+# Función principal que llama a las otras
 def submatrices():
     carpeta_destino = "submatrices"
     matriz = cargar_matriz("pixeles_cuadrante.img")
     generar_submatrices(matriz, carpeta_destino)
 
-#submatrices()

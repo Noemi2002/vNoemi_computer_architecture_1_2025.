@@ -2,7 +2,7 @@ import subprocess
 import shutil
 import os
 
-# Función para convertir texto → binario
+# Función para convertir texto a binario
 def escribir_binario(input_txt, output_bin):
     with open(input_txt, "r") as f_in, open(output_bin, "wb") as f_out:
         for line in f_in:
@@ -10,7 +10,7 @@ def escribir_binario(input_txt, output_bin):
             if 0 <= num <= 255:
                 f_out.write(bytes([num]))
             else:
-                print(f"❌ Valor fuera de rango en {input_txt}: {num}")
+                print(f"Valor fuera de rango en {input_txt}: {num}")
 
 # Función para reordenar bytes según mapeo
 def reordenar_bytes_pares(input_bin, output_txt, mapeo_pares):
@@ -25,7 +25,7 @@ def reordenar_bytes_pares(input_bin, output_txt, mapeo_pares):
         for byte in bytes_reordenados:
             f.write(f"{byte}\n")
 
-# Mapeo definido para la interpolación
+# Mapeo para reorganizar la interpolación
 mapeo = {
     0: 0, 1: 3, 2: 12, 3: 15,
     4: 1, 5: 2, 6: 4, 7: 8,
@@ -46,6 +46,8 @@ carpeta_interpolacion = os.path.join(base_dir, "interpolacion")
 os.makedirs(carpeta_output, exist_ok=True)
 os.makedirs(carpeta_interpolacion, exist_ok=True)
 
+
+# Función principal
 def procesar_submatrices():
     # Procesar submatrices del 0 al 9800
     for i in range(0, 9801):
@@ -53,14 +55,14 @@ def procesar_submatrices():
         ruta_submatriz = os.path.join(carpeta_submatrices, nombre_archivo)
 
         if not os.path.exists(ruta_submatriz):
-            print(f"❌ Archivo no encontrado: {ruta_submatriz}, saltando...")
+            print(f"Archivo no encontrado: {ruta_submatriz}")
             continue
 
         # Convertir a binario crudo para input
         input_bin = os.path.join(ruta_ensamblador, "input.img")
         escribir_binario(ruta_submatriz, input_bin)
 
-        # Ejecutar el ensamblador
+        # Ejecutar el código ensmablador ensamblador
         subprocess.run([ejecutable], cwd=ruta_ensamblador)
 
         # Mover output generado
@@ -68,12 +70,12 @@ def procesar_submatrices():
         nuevo_output_bin = os.path.join(carpeta_output, f"output{i}.img")
         shutil.move(output_bin, nuevo_output_bin)
 
-        # Aplicar reordenamiento e interpolación
+        # Reordenar interpolación
         archivo_interpolado = os.path.join(carpeta_interpolacion, f"interpolado{i}.img")
         reordenar_bytes_pares(nuevo_output_bin, archivo_interpolado, mapeo)
 
-        print(f"✔ Procesado submatriz_{i}.img → output{i}.img → interpolado{i}.txt")
+        print(f"Procesado submatriz_{i}.img → output{i}.img → interpolado{i}.img")
 
-    print("✅ ¡Todos los archivos fueron procesados e interpolados!")
+    print("Todos los archivos fueron procesados e interpolados")
 
 #procesar_submatrices()

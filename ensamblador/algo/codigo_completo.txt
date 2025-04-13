@@ -1,0 +1,292 @@
+section .data
+    input_file  db 'input.bin', 0    ; Nombre del archivo de entrada (terminado en null)
+    output_file db 'output.bin', 0   ; Nombre del archivo de salida (terminado en null)
+    numSuma     dd 1                 ; Constante: valor a sumar (1 en este caso)
+    num1        db 0                 ; Variable para el primer byte leído
+    num2        db 0                 ; Variable para el segundo byte
+    num3        db 0                 ; Variable para el tercer byte
+    num4        db 0                 ; Variable para el cuarto byte
+    num5        db 0                 ; Variable para el valor a
+    num6        db 0                 ; Variable para el valor b
+    num7        db 0                 ; Variable para el valor c
+    num8        db 0                 ; Variable para el valor d
+    num9        db 0                 ; Variable para el valor e
+    num10        db 0                ; Variable para el valor f
+    num11        db 0                ; Variable para el valor g
+    num12        db 0                ; Variable para el valor h
+    num13        db 0                ; Variable para el valor i
+    num14        db 0                ; Variable para el valor j
+    num15        db 0                ; Variable para el valor k
+    num16        db 0                ; Variable para el valor l
+    num17        dd 333              ; Valor del algortimo para multiplicar
+    num18        dd 666              ; Valor del algortimo para multiplicar
+
+
+
+section .bss
+    input_fd    resd 1               ; Descriptor de archivo para input.bin (4 bytes)
+    output_fd   resd 1               ; Descriptor de archivo para output.bin (4 bytes)
+
+
+
+section .text
+    global _start                   
+
+
+; Función inicial
+_start:
+
+    ; Abrir el archivo input.bin
+    mov eax, 5                      ; syscall 5: sys_open
+    mov ebx, input_file             ; Puntero al nombre del archivo
+    mov ecx, 0                      ; Modo: O_RDONLY (solo lectura)
+    int 0x80                        ; Llamada al sistema
+    mov [input_fd], eax             ; Guardar el descriptor de archivo en input_fd
+
+
+    ; Crear o abrir el archivo output.bin
+    mov eax, 5                      ; syscall 5: sys_open
+    mov ebx, output_file            ; Puntero al nombre del archivo
+    mov ecx, 0x41                   ; Modo: O_WRONLY | O_CREAT (escritura + crear)
+    mov edx, 0o644                  ; Permisos: rw-r--r-- (en octal)
+    int 0x80                        ; Llamada al sistema
+    mov [output_fd], eax            ; Guardar el descriptor de archivo en output_fd
+
+
+    ; Leer los valoresd de input.bin
+    mov eax, 3                      ; syscall 3: sys_read
+    mov ebx, [input_fd]             ; Descriptor de archivo
+    mov ecx, num1                   ; Buffer de destino (num1, num2, num3, num4)
+    mov edx, 4                      ; Cantidad de bytes a leer (4)
+    int 0x80                        ; Llamada al sistema
+
+
+    ; Realiza el algortimo en las funciones cuadradoy centro
+
+    call cuadrado
+    call centro
+
+    ; Escribir los valores en output.bin
+
+    mov eax, 4                      ; syscall 4: sys_write
+    mov ebx, [output_fd]            ; Descriptor de archivo
+    mov ecx, num1                   ; Buffer de origen (num1, num2, num3, num4)
+    mov edx, 16                      ; Cantidad de bytes a escribir (4)
+    int 0x80                        ; Llamada al sistema
+
+
+    ; 6. Cerrar archivos
+    mov eax, 6                      ; syscall 6: sys_close
+    mov ebx, [input_fd]             ; Cerrar input.bin
+    int 0x80
+    mov eax, 6
+    mov ebx, [output_fd]            ; Cerrar output.bin
+    int 0x80
+
+
+    ; EXIT
+    mov eax, 1                      ; syscall 1: sys_exit
+    mov ebx, 0                      ; Código de retorno 0 (éxito)
+    int 0x80
+
+
+; Función para llenar los lados de la matríz
+cuadrado:
+
+    ; Valor a
+    mov eax, [num18]
+    mov ebx, [num1]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num17]
+    mov ebx, [num2]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num5], eax    ; Guardar el valor de a en num5
+
+; -------------------------------
+
+    ; Valor b
+    mov eax, [num17]
+    mov ebx, [num1]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num18]
+    mov ebx, [num2]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num6], eax    ; Guardar el valor de b en num6
+
+; -------------------------------
+    
+    ; Valor c
+    mov eax, [num18]
+    mov ebx, [num1]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num17]
+    mov ebx, [num3]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num7], eax    ; Guardar el valor de c en num7
+
+; -------------------------------
+    
+    ; Valor g
+    mov eax, [num17]
+    mov ebx, [num1]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num18]
+    mov ebx, [num3]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num8], eax    ; Guardar el valor de g en num8
+
+; -------------------------------
+    
+    ; Valor k
+    mov eax, [num18]
+    mov ebx, [num3]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num17]
+    mov ebx, [num4]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num9], eax    ; Guardar el valor de k en num9
+
+; -------------------------------
+    
+    ; Valor l
+    mov eax, [num17]
+    mov ebx, [num3]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num18]
+    mov ebx, [num4]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num10], eax    ; Guardar el valor de l en num10
+
+; -------------------------------
+    
+    ; Valor f
+    mov eax, [num18]
+    mov ebx, [num2]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num17]
+    mov ebx, [num4]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num11], eax    ; Guardar el valor de f en num11
+
+
+; -------------------------------
+    
+    ; Valor j
+    mov eax, [num17]
+    mov ebx, [num2]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num18]
+    mov ebx, [num4]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num12], eax    ; Guardar el valor de j en num12
+    
+    
+    ret ; Regresar a la función original
+
+
+; Función para llenar el centro de la matriz
+centro:
+
+    ; Valor d
+    mov eax, [num18]
+    mov ebx, [num7]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num17]
+    mov ebx, [num11]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num13], eax    ; Guardar el valor de d en num13
+
+; -------------------------------
+
+    ; Valor e
+    mov eax, [num17]
+    mov ebx, [num7]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num18]
+    mov ebx, [num11]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num14], eax    ; Guardar el valor de b en num14
+
+; -------------------------------
+    
+    ; Valor h
+    mov eax, [num18]
+    mov ebx, [num8]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num17]
+    mov ebx, [num12]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num15], eax    ; Guardar el valor de h en num15
+
+; -------------------------------
+    
+    ; Valor i
+    mov eax, [num17]
+    mov ebx, [num8]
+    mul ebx            ; eax = eax * ebx
+    mov esi, eax       ; Guardar resultado en esi
+
+    mov eax, [num18]
+    mov ebx, [num12]
+    mul ebx            ; eax = eax * ebx
+
+    add eax, esi       ; eax = eax + esi
+
+    mov [num16], eax    ; Guardar el valor de i en num16
+    ret
+
